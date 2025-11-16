@@ -5,5 +5,5 @@ export default defineConfig({
   plugins: [react({
     jsxRuntime: 'automatic'
   })],
-  base: process.env.GITHUB_ACTIONS ? '/metawebsite/' : '/'
+  base: process.env.VITE_BASE_PATH || '/'
 })
