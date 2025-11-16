@@ -107,7 +107,7 @@ export function ContactSection() {
                       className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 resize-none"
                     />
                   </div>
-                  <Button type="submit" className="w-full group" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" disabled={isSubmitting}>
                     <Send className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
@@ -203,7 +203,7 @@ export function ContactSection() {
 
       <div className="container mx-auto px-6 mt-12">
         <div className="border-t border-slate-800 pt-8 text-center">
-          <p className="text-slate-500">
+          <p className="text-slate-300">
             © 2024 MetaForgeVerse. All rights reserved.
           </p>
         </div>
