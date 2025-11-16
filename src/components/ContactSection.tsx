@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Mail, MessageSquare, Send, Twitter, Youtube, Instagram } from "lucide-react";
+import { Mail, MessageSquare, Send, Twitter, Youtube, Instagram, CheckCircle } from "lucide-react";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
@@ -11,12 +11,38 @@ export function ContactSection() {
     email: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `Contact from ${formData.name}`;
-    const body = `Name: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0A%0D%0AMessage:%0D%0A${formData.message}`;
-    window.location.href = `mailto:hello@metaforgeverse.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_KEY", // Заменим после регистрации
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: `New contact from ${formData.name} - MetaForgeVerse`,
+          from_name: "MetaForgeVerse Website"
+        }),
+      });
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setFormData({ name: "", email: "", message: "" });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -51,6 +77,7 @@ export function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                       required
+                      disabled={isSubmitting}
                       className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                     />
                   </div>
@@ -63,6 +90,7 @@ export function ContactSection() {
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       required
+                      disabled={isSubmitting}
                       className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                     />
                   </div>
@@ -75,12 +103,13 @@ export function ContactSection() {
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                       required
+                      disabled={isSubmitting}
                       className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 resize-none"
                     />
                   </div>
-                  <Button type="submit" className="w-full group">
+                  <Button type="submit" className="w-full group" disabled={isSubmitting}>
                     <Send className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    Send Message
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </div>
@@ -103,9 +132,10 @@ export function ContactSection() {
                 <h3 className="text-xl text-white mb-6">Follow Us</h3>
                 <div className="flex gap-4">
                   <a 
-                    href="#" 
-                    className="bg-slate-900 hover:bg-purple-500/20 p-3 rounded-lg transition-colors group cursor-not-allowed opacity-50"
-                    title="Coming soon"
+                    href="https://x.com/metaforgeverse" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="bg-slate-900 hover:bg-purple-500/20 p-3 rounded-lg transition-colors group"
                   >
                     <Twitter className="h-5 w-5 text-slate-400 group-hover:text-purple-400" />
                   </a>
@@ -147,6 +177,29 @@ export function ContactSection() {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full mx-auto text-center">
+            <div className="mb-6">
+              <div className="mx-auto w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="h-10 w-10 text-green-400" />
+              </div>
+              <h3 className="text-2xl text-white mb-2">Message Sent!</h3>
+              <p className="text-slate-400">
+                Your message has been sent successfully. We'll review it and get back to you as soon as possible. Thank you for contacting MetaForgeVerse!
+              </p>
+            </div>
+            <Button 
+              onClick={() => setShowSuccess(false)}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-6 mt-12">
         <div className="border-t border-slate-800 pt-8 text-center">
