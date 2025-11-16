@@ -38,10 +38,10 @@ export function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-6 h-20 flex items-center">
-        <div className="flex items-center justify-between w-full">
+      <div className="container mx-auto px-6 py-4 h-20">
+        <div className="flex items-center justify-between h-full">
           <div className="flex items-center gap-2">
-            <div className="bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 p-1.5 rounded-lg">
+            <div className="bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 p-2 rounded-lg">
               <img src="/metaforgeverse-icon.svg" alt="MetaForgeVerse" className="h-10 w-10" />
             </div>
             <span className="text-white text-xl font-bold">MetaForgeVerse</span>
