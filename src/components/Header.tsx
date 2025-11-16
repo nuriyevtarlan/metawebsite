@@ -42,7 +42,7 @@ export function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 p-2 rounded-lg">
-              <img src="/metaforgeverse-icon.svg" alt="MetaForgeVerse" className="h-8 w-8" />
+              <img src="/metaforgeverse-icon.svg" alt="MetaForgeVerse" className="h-24 w-24" />
             </div>
             <span className="text-white text-xl font-bold">MetaForgeVerse</span>
           </div>
