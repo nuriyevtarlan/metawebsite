@@ -1,0 +1,62 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build
+      run: npm run build
+      
+    - name: Deploy to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "dist/*"
+        target: "~/tettra-project/website-tmp/"
+        strip_components: 1
+        
+    - name: Move files on server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Backup old version
+          mkdir -p ~/tettra-project/website-backup
+          cp -r ~/tettra-project/website/assets/*.js ~/tettra-project/website-backup/ 2>/dev/null || true
+          
+          # Move new files
+          mv ~/tettra-project/website-tmp/assets/*.js ~/tettra-project/website/assets/
+          mv ~/tettra-project/website-tmp/assets/*.css ~/tettra-project/website/assets/
+          mv ~/tettra-project/website-tmp/index.html ~/tettra-project/website/
+          
+          # Clean up old versions (keep only latest 2)
+          cd ~/tettra-project/website/assets
+          ls -t index-*.js | tail -n +3 | xargs -r rm
+          ls -t index-*.css | tail -n +3 | xargs -r rm
+          
+          # Clean up temp
+          rm -rf ~/tettra-project/website-tmp
+          
+          echo "Deployment completed successfully!"
